@@ -85,7 +85,10 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 			first = False
 			print account.fullname
 
-		print '  ', sp.value, '\t', sp.transaction.enter_date.strftime('%b %d %Y'), 
+		print '  ', sp.value, '\t', 
+		if(len(str(sp.value)) <= 3):
+			print '\t',
+		print sp.transaction.enter_date.strftime('%b %d %Y'), 
 
 		found = False
 
@@ -110,7 +113,7 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 			if account.fullname.startswith("Assets") and "Checking" in account.fullname:
 				if sp.value > 0:
 					budget_income.amount += sp.value
-				print '\tIncome', 
+				print '\tIncome\t', 
 			else: 
 				budget_personal.amount += sp.value
 				print '\tPersonal', 
@@ -118,7 +121,6 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 		print '\t', sp.transaction.description
 
 	return budget_file
-
 
 
 settings_file = 'settings.yaml'
