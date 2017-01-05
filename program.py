@@ -3,15 +3,27 @@ import os, piecash, yaml, time, math
 from piecash import open_book, Transaction, Split, Account
 from pprint import pprint
 
+def print_percentage_bar(amount, max):
+	str = "0%"
+	range_max = 0
+	if amount != 0 and max != 0:
+		str = "{0:.0f}%".format((amount/max)*100)
+		range_max = int(math.ceil((amount/max)*100 / 10)) 
+	s = '['
+	i = 0
+	for x in range(0, range_max):
+		s += '*'
+		i += 1
+	for x in range(i, 10):
+		s += ' '
+	s += ']'
+	s += str
+	return s
+
 class account:
 	amount = 0
 	max = 0
 	name = ""
-
-	def percentage(self):
-		if self.amount == 0 or self.max == 0:
-			return "0%"
-		return "{0:.0f}%".format((self.amount/self.max)*100)
 
 	def __init__(self, name):
 		self.name = name
@@ -29,25 +41,10 @@ class account:
 
 		s += str(self.amount) + ' '
 		s += '\t'
-
-		percent = int(self.percentage().rstrip("%"))
-
 		if(self.amount < 1000):
 			s += '\t'
-		s += '['
 
-		i = 0
-
-		range_max = int(math.ceil(percent / 10.0)) 
-
-		for x in range(0, range_max):
-			s += '-'
-			i += 1
-		for x in range(i, 10):
-			s += ' '
-		s += ']'
-
-		s += str(self.percentage())
+		s += print_percentage_bar(self.amount, self.max)
 		return s
 
 class budget:
@@ -55,11 +52,6 @@ class budget:
 	max = 0
 	name = ""
 	accounts = []
-
-	def percentage(self):
-		if self.amount == 0 or self.max == 0:
-			return "0%"
-		return "{0:.0f}%".format((self.amount/self.max)*100)
 
 	def __init__(self, name):
 		self.name = name
@@ -73,16 +65,15 @@ class budget:
 	def __str__(self):
 		s = self.name + ' '+ str(self.amount) 
 		s += " / " + str(self.max)
-		s += "\n"
-		s += str(self.percentage()) + "\n\n"
+		s += "\t"
+		if(len(s) <= 24):
+			s += "\t"
+		s += print_percentage_bar(self.amount,self.max) + "\n"
 		for a in self.accounts:
 			s += '   ' + str(a) + "\n"
 		return s
 
-
-
-
-def checkBalance(book, account, year, month, budget_essentials, budget_savings, budget_personal):
+def checkBalance(book, account, year, month, budget_essentials, budget_savings, budget_personal, budget_income):
 	account = book.accounts(fullname=account)
 
 	first = True
@@ -114,11 +105,15 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 					found = True
 					print '\tSavings', 
 					break
-		
+				
 		if not found:
-			budget_personal.amount += sp.value
-			print '\tPersonal', 
-			found = True
+			if account.fullname.startswith("Assets") and "Checking" in account.fullname:
+				if sp.value > 0:
+					budget_income.amount += sp.value
+				print '\tIncome', 
+			else: 
+				budget_personal.amount += sp.value
+				print '\tPersonal', 
 
 		print '\t', sp.transaction.description
 
@@ -148,21 +143,34 @@ for a in budget_file['essentials']['accounts']:
 for a in budget_file['savings']['accounts']:
 	budget_savings.accounts.append(account(name=a['name'], max = a['budget']))
 
- # check for existance of to_account and from_account
-book = piecash.open_book(book_path)
+# check for existance of to_account and from_account
+try: 
+	book = piecash.open_book(book_path, readonly=True, open_if_lock=True)
+except:
+	# won't hit this due to open_if_lock=True
+	print 'Database is locked.'
+	exit()
 
 year = time.strftime('%Y')
 month = time.strftime('%b')
 
-print month, ' ', year
-print
-print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+print '\nBudget: ', month, ' ', year
+print '\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
+accounts = []
 
 for a in book.accounts:
-	if a.fullname.startswith("Expenses"):
-		budget_file = checkBalance(book, a.fullname, year, month, budget_essentials, budget_savings, budget_personal)
+	if a.fullname.startswith("Expenses") or a.fullname.startswith("Assets"):
+		accounts.append(a.fullname)
+#	if a.fullname.startswith("Assets"):
+#		budget_file = checkBalance(book, a.fullname, year, month, budget_essentials, budget_savings, budget_personal, budget_income)
 
-print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+accounts.sort()
+
+for a in accounts:
+	budget_file = checkBalance(book, a, year, month, budget_essentials, budget_savings, budget_personal, budget_income)
+
+print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
 print 
 print budget_essentials
