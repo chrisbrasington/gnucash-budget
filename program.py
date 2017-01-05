@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-import os, piecash, yaml, time, math
+import os, piecash, yaml, time, math, sys
 from piecash import open_book, Transaction, Split, Account
 from pprint import pprint
 
@@ -41,8 +41,6 @@ class account:
 
 		s += str(self.amount) + ' '
 		s += '\t'
-		if(self.amount < 1000):
-			s += '\t'
 
 		s += print_percentage_bar(self.amount, self.max)
 		return s
@@ -66,8 +64,6 @@ class budget:
 		s = self.name + ' '+ str(self.amount) 
 		s += " / " + str(self.max)
 		s += "\t"
-		if(len(s) <= 24):
-			s += "\t"
 		s += print_percentage_bar(self.amount,self.max) + "\n"
 		for a in self.accounts:
 			s += '   ' + str(a) + "\n"
@@ -79,7 +75,7 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 	first = True
 	
 	for sp in reversed(account.splits):
-		if sp.transaction.enter_date.strftime('%Y') != year or sp.transaction.enter_date.strftime('%b') != month :
+		if sp.transaction.post_date.strftime('%Y') != year or sp.transaction.post_date.strftime('%b') != month :
 			break; 
 		if first:
 			first = False
@@ -88,7 +84,7 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 		print '  ', sp.value, '\t', 
 		if(len(str(sp.value)) <= 3):
 			print '\t',
-		print sp.transaction.enter_date.strftime('%b %d %Y'), 
+		print sp.transaction.post_date.strftime('%b %d %Y'), 
 
 		found = False
 
@@ -122,13 +118,21 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 
 	return budget_file
 
-
 settings_file = 'settings.yaml'
+year = time.strftime('%Y')
+month = time.strftime('%b')
+
+if sys.argv > 0:
+	print 'DEMO MODE'
+	settings_file = 'settings_sample.yaml'
+	year = '2017'
+	month = 'Jan'
+
+
 with open(settings_file) as ymlfile:
 	budget_file = yaml.load(ymlfile)
 	
 book_path = budget_file['file']
-
 
 budget_essentials = budget(name = "Essentials", max = budget_file['essentials']['budget'])
 
@@ -149,12 +153,8 @@ for a in budget_file['savings']['accounts']:
 try: 
 	book = piecash.open_book(book_path, readonly=True, open_if_lock=True)
 except:
-	# won't hit this due to open_if_lock=True
-	print 'Database is locked.'
+	print 'Unable to open database.'
 	exit()
-
-year = time.strftime('%Y')
-month = time.strftime('%b')
 
 print '\nBudget: ', month, ' ', year
 print '\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

@@ -1,1 +1,21 @@
-file : '.\database.gnucash'
+file : 'database.gnucash'
+
+essentials:
+    accounts: 
+        - name: Rent
+          budget: 1000
+        - name: Utilities
+          budget: 100
+        - name: Groceries
+          budget: 400
+    budget: 1100
+savings:
+    accounts: 
+        - name: Savings
+          budget: 400
+    budget: 400
+personal:
+    #   personal is implied every other accounts
+    budget: 1000
+income:
+    budget: 4000
