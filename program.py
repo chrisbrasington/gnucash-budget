@@ -73,7 +73,8 @@ class budget:
 		s += "\t"
 		if(len(s)<=24):
 			s += "\t"
-		s += "\n"
+		s += print_percentage_bar(self.amount,self.max)
+		s += "\n\n"
 		for a in self.accounts:
 			if self.name == "Personal":
 				s += '   ' + a.output_without_bar() + "\n"
