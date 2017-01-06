@@ -1,4 +1,4 @@
-file : 'database.gnucash'
+file : 'sample.gnucash'
 
 essentials:
     accounts: 
@@ -8,7 +8,7 @@ essentials:
           budget: 100
         - name: Groceries
           budget: 400
-    budget: 1100
+    budget: 1500
 savings:
     accounts: 
         - name: Savings
