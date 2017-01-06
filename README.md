@@ -26,7 +26,7 @@ Transactions are also shown. Accounts for the active month in descending order. 
 ```
 DEMO MODE
 Budget:  Jan   2017
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Assets:Current Assets:Checking Account
    -80 		Jan 13 2017 	Income		Electric
    -1000 	Jan 02 2017 	Income		Rent
@@ -46,8 +46,9 @@ Expenses:Rent
 Expenses:Utilities:Electric
    80 		Jan 13 2017 	Essential 	Electric
 Expenses:Video Games
+   20 		Jan 19 2017 	Personal 	Video games
    1200 	Jan 18 2017 	Personal 	VR headset
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ```
 ### Settings Setup:
 Settings file is organized with 50/20/30 budgeting in mind. 50% to essentials, 20% to savings, 30% personal (other). (You could set areas to 0 budget). Income has an expected positive amount.
@@ -63,7 +64,7 @@ essentials:
           budget: 100
         - name: Groceries
           budget: 400
-    budget: 1100 #total
+    budget: 1500
 savings:
     accounts: 
         - name: Savings
@@ -74,5 +75,4 @@ personal:
     budget: 1000
 income:
     budget: 4000
-
 ```
