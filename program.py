@@ -122,12 +122,11 @@ settings_file = 'settings.yaml'
 year = time.strftime('%Y')
 month = time.strftime('%b')
 
-if sys.argv > 0:
+if len(sys.argv) > 1:
 	print 'DEMO MODE'
 	settings_file = 'settings_sample.yaml'
 	year = '2017'
 	month = 'Jan'
-
 
 with open(settings_file) as ymlfile:
 	budget_file = yaml.load(ymlfile)
