@@ -124,8 +124,17 @@ def checkBalance(book, current_account, year, month, budget_essentials, budget_s
 				print '\tIncome\t', 
 			else: 
 				budget_personal.amount += sp.value
-				budget_personal.accounts.append(account(name=current_account.name, max = sp.value))
-				budget_personal.accounts[-1].amount = sp.value
+				
+				account_exists = False
+				for a in budget_personal.accounts:
+					if a.name == current_account.name:
+						a.amount += sp.value
+						account_exists = True
+						break
+					
+				if not account_exists:
+					budget_personal.accounts.append(account(name=current_account.name, max = sp.value))
+					budget_personal.accounts[-1].amount = sp.value
 				
 				print '\tPersonal', 
 
