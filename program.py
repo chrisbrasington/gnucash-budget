@@ -32,7 +32,9 @@ class account:
 		self.name = name
 		self.max = max
 
-	def __str__(self):
+	def output_without_bar(self):
+		if max == 0:
+			return ""
 		s = self.name
 		if(len(s) <=3):
 			s += ' \t'
@@ -41,7 +43,12 @@ class account:
 
 		s += str(self.amount) + ' '
 		s += '\t'
-
+		if(self.amount <= 1000):
+			s += '\t'
+		return s
+		
+	def __str__(self):
+		s = self.output_without_bar()
 		s += print_percentage_bar(self.amount, self.max)
 		return s
 
@@ -64,22 +71,27 @@ class budget:
 		s = self.name + ' '+ str(self.amount) 
 		s += " / " + str(self.max)
 		s += "\t"
-		s += print_percentage_bar(self.amount,self.max) + "\n"
+		if(len(s)<=24):
+			s += "\t"
+		s += "\n"
 		for a in self.accounts:
-			s += '   ' + str(a) + "\n"
+			if self.name == "Personal":
+				s += '   ' + a.output_without_bar() + "\n"
+			else:
+				s += '   ' + str(a) + "\n"
 		return s
 
-def checkBalance(book, account, year, month, budget_essentials, budget_savings, budget_personal, budget_income):
-	account = book.accounts(fullname=account)
+def checkBalance(book, current_account, year, month, budget_essentials, budget_savings, budget_personal, budget_income):
+	current_account = book.accounts(fullname=current_account)
 
 	first = True
 	
-	for sp in reversed(account.splits):
+	for sp in reversed(current_account.splits):
 		if sp.transaction.post_date.strftime('%Y') != year or sp.transaction.post_date.strftime('%b') != month :
 			break; 
 		if first:
 			first = False
-			print account.fullname
+			print current_account.fullname
 
 		print '  ', sp.value, '\t', 
 		if(len(str(sp.value)) <= 3):
@@ -89,7 +101,7 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 		found = False
 
 		for a in budget_essentials.accounts:
-			if a.name in account.fullname:
+			if a.name in current_account.fullname:
 				budget_essentials.amount += sp.value
 				a.amount += sp.value
 				found = True
@@ -98,7 +110,7 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 
 		if not found:
 			for a in budget_savings.accounts:
-				if a.name in account.fullname:
+				if a.name in current_account.fullname:
 					budget_savings.amount += sp.value
 					a.amount += sp.value
 					found = True
@@ -106,12 +118,15 @@ def checkBalance(book, account, year, month, budget_essentials, budget_savings, 
 					break
 				
 		if not found:
-			if account.fullname.startswith("Assets") and "Checking" in account.fullname:
+			if current_account.fullname.startswith("Assets") and "Checking" in current_account.fullname:
 				if sp.value > 0:
 					budget_income.amount += sp.value
 				print '\tIncome\t', 
 			else: 
 				budget_personal.amount += sp.value
+				budget_personal.accounts.append(account(name=current_account.name, max = sp.value))
+				budget_personal.accounts[-1].amount = sp.value
+				
 				print '\tPersonal', 
 
 		print '\t', sp.transaction.description
