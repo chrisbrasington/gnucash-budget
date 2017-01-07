@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-import os, piecash, yaml, time, math, sys
+import os, piecash, yaml, time, datetime, math, sys
 from piecash import open_book, Transaction, Split, Account
 from pprint import pprint
 
@@ -36,10 +36,11 @@ class account:
 		if max == 0:
 			return ""
 		s = self.name
-		if(len(s) <=3):
-			s += ' \t'
+		s += ' \t'
+		if(len(s) <=5):
+			s += '\t'
 		if(len(s) <=12):
-			s += ' \t'
+			s += '\t'
 
 		s += str(self.amount) + ' '
 		s += '\t'
@@ -122,7 +123,9 @@ def checkBalance(book, current_account, year, month, budget_essentials, budget_s
 			if current_account.fullname.startswith("Assets") and "Checking" in current_account.fullname:
 				if sp.value > 0:
 					budget_income.amount += sp.value
-				print '\tIncome\t', 
+					print '\tIncome\t',
+				else: 
+					print '\t------\t',
 			else: 
 				budget_personal.amount += sp.value
 				
@@ -142,6 +145,26 @@ def checkBalance(book, current_account, year, month, budget_essentials, budget_s
 		print '\t', sp.transaction.description
 
 	return budget_file
+
+def printAccountBalances(book):
+	
+	print "{:%b %d %Y}".format(datetime.date.today()),
+	print 'Balances:\n'
+	checking = book.accounts(fullname="Assets:Current Assets:Checking Account")
+	savings = book.accounts(fullname="Assets:Current Assets:Savings Account")
+	credit_card = book.accounts(fullname="Liabilities:Credit Card")
+	
+	print 'Checking Account: \t',
+	print checking.get_balance()
+	
+	print 'Savings Account: \t',
+	print savings.get_balance()
+	
+	print 'Credit Card: \t\t',
+	print credit_card.get_balance()
+	
+	print
+	
 
 settings_file = 'settings.yaml'
 year = time.strftime('%Y')
@@ -186,7 +209,7 @@ print '\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 accounts = []
 
 for a in book.accounts:
-	if a.fullname.startswith("Expenses") or a.fullname.startswith("Assets"):
+	if a.fullname.startswith("Expenses") or a.fullname.startswith("Assets") or a.fullname.startswith("Liabilities:Credit Card"):
 		accounts.append(a.fullname)
 #	if a.fullname.startswith("Assets"):
 #		budget_file = checkBalance(book, a.fullname, year, month, budget_essentials, budget_savings, budget_personal, budget_income)
@@ -206,3 +229,7 @@ print budget_personal
 print budget_income
 
 print budget_savings
+
+print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
+printAccountBalances(book)
