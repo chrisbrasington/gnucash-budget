@@ -126,7 +126,7 @@ def checkBalance(book, current_account, year, month, budget_essentials, budget_s
 					print '\tIncome\t',
 				else: 
 					print '\t------\t',
-			elif current_account.name != "Credit Card": 
+			elif current_account.name != "Credit Card"and not current_account.fullname.startswith("Assets"): 
 				budget_personal.amount += sp.value
 				
 				account_exists = False
