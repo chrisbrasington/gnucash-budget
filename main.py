@@ -212,8 +212,20 @@ def printAccountBalances(book):
 # today
 today = datetime.date.today()
 
-# read settings
+# settings file
 settings_file = 'settings.yaml'
+
+# command line parameter
+print_full_year = False
+if len(sys.argv[1:]) > 0:
+    # print full year
+    if str(sys.argv[1:][0]) == 'year':
+        print_full_year = True
+    # different settings file
+    elif 'yaml' in str(sys.argv[1:][0]):
+        settings_file = sys.argv[1:][0]
+        print_full_year = True
+
 with open(settings_file) as ymlfile:
 	budget_file = yaml.load(ymlfile)
 
@@ -229,10 +241,7 @@ except:
 
 year = []
 
-# command line parameter to print full year
-print_full_year = False
-if len(sys.argv[1:]) > 0 and str(sys.argv[1:][0]) == 'year':
-    print_full_year = True
+
 
 # for current month, descending in reverse for the year
 for current_month in range(today.month, 0, -1):
