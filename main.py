@@ -212,6 +212,9 @@ def printAccountBalances(book):
 # today
 today = datetime.date.today()
 
+# year/month override (to get different year's data)
+# today = datetime.datetime.strptime('Dec 25 2016  1:33PM', '%b %d %Y %I:%M%p')
+
 # settings file
 settings_file = 'settings.yaml'
 
