@@ -178,6 +178,10 @@ class monthly_budget:
         print('\t', repr(float(self.income)).rjust(8), '/', repr(self.income_budget).rjust(4), end=' ')
         print(self.get_percentage_bar(self.income, self.income_budget))
 
+        # print income accounts
+        # self.print_accounts_summary(self.income_accounts)
+        # print()
+
         # print savings summary
         print ('Savings  ', end='')
         print('\t', repr(float(self.savings)).rjust(8), '/', repr(self.savings_budget).rjust(4), end=' ')
@@ -251,13 +255,18 @@ for current_month in range(today.month, 0, -1):
         # only look at accounts being added into
         splitnum = t.splits[0].value < 0
 
+        # unless account is income, look at where it came from
+        # not implemented
+
         # add transaction if matching looping month
         if t.post_date.month == current_month:
             b.add_to_account(t.splits[splitnum].account, t.splits[splitnum].value)
 
+    # print transactions descending
+    b.print_transactions_desc()    
+
     # print monthly transactions descending
     if t.post_date.month == today.month:
-        b.print_transactions_desc()    
 
         # print book account balances for current month only
         printAccountBalances(book)
