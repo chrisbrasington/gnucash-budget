@@ -132,6 +132,9 @@ class monthly_budget:
     # print transactions from most recent descending
     def print_transactions_desc(self):
         for t in self.transactions:
+                    
+            # only look at accounts being added into
+            splitnum = t.splits[0].value < 0
              
             # transaction amount
             print (repr(float(t.splits[splitnum].value)).rjust(10), ' ', end='')
