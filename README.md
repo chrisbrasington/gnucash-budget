@@ -1,53 +1,35 @@
 # gnuCash Budget Report
 ### Run:
-Run with a parameter for DEMO settings and database: ./program demo
+Run with a parameter for DEMO settings and database: ./main settings_sample.yaml
 
 ### Output:
 
-Output will show percentage bars per budget category and accounts. At this time, budget categories are static while accounts are dynamic from the settings file.
+Output will show percentage bars per budget category and accounts. At this time, budget categories are static (essential, personal, income, savings) while accounts are dynamic from the settings file.
 Over-budgeting is shown by a >100% bar.
 ```
-Essentials 1180 / 1500	[********  ]79%
-   Rent 	1000 	    [**********]100%
-   Utilities 	80 	    [********  ]80%
-   Groceries 	100 	[***       ]25%
+January 2017 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      84.0  01/25/2017  EXPENSE  Dining               Fancy Resturaunt
+     200.0  01/20/2017  BANK     Savings Account      Income Savings
+    2000.0  01/20/2017  BANK     Checking Account     Income
+      20.0  01/19/2017  EXPENSE  Video Games          Video games
+    1200.0  01/18/2017  EXPENSE  Video Games          VR headset
+      80.0  01/13/2017  EXPENSE  Electric             Electric
+     200.0  01/06/2017  BANK     Savings Account      Income Savings
+    2000.0  01/06/2017  BANK     Checking Account     Income
+     100.0  01/05/2017  EXPENSE  Groceries            Not junk food
+    1000.0  01/02/2017  EXPENSE  Rent                 Rent
 
-Personal 1284 / 1000	[*************]128%
-   Dining 	84 		
-   Video Games 	1200 	
-   
-Income 4000 / 4000	    [**********]100%
+Essentials	   1180.0 / 1500 [********  ]79% 
+  Rent                    1000
+  Utilities               80
+  Groceries               100
 
-Savings 400 / 400	    [**********]100%
-   Savings 	400 	    [**********]100%
+Personal	   1304.0 / 1000 [**************]130% 
+  Dining                  84
+  Video Games             1220
 
-```
-Transactions are also shown. Accounts for the active month in descending order. Transactions in accounts will be in latest to oldest.
-```
-DEMO MODE
-Budget:  Jan   2017
-
-Assets:Current Assets:Checking Account
-   -80 		Jan 13 2017 	Income		Electric
-   -1000 	Jan 02 2017 	Income		Rent
-   -200 	Jan 20 2017 	Income		Income Savings
-   -200 	Jan 06 2017 	Income		Income Savings
-   2000 	Jan 20 2017 	Income		Income
-   2000 	Jan 06 2017 	Income		Income
-Assets:Current Assets:Savings Account
-   200 		Jan 20 2017 	Savings 	Income Savings
-   200 		Jan 06 2017 	Savings 	Income Savings
-Expenses:Dining
-   84 		Jan 25 2017 	Personal 	Fancy Resturaunt
-Expenses:Groceries
-   100 		Jan 05 2017 	Essential 	Not junk food
-Expenses:Rent
-   1000 	Jan 02 2017 	Essential 	Rent
-Expenses:Utilities:Electric
-   80 		Jan 13 2017 	Essential 	Electric
-Expenses:Video Games
-   20 		Jan 19 2017 	Personal 	Video games
-   1200 	Jan 18 2017 	Personal 	VR headset
+Income  	   4000.0 / 4000 [**********]100%
+Savings  	    400.0 /  400 [**********]100%
 
 ```
 ### Settings Setup:
