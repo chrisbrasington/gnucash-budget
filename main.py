@@ -201,8 +201,14 @@ def printAccountBalances(book):
     credit_card = book.accounts(fullname="Liabilities:Credit Card")
     
     print (repr('  Checking Account ').strip("'").ljust(26), end='')
-    print (checking.get_balance())
- 	
+    print (checking.get_balance(), end='')
+
+    # net balance
+    print ('  (', end='')
+    print(checking.get_balance()-credit_card.get_balance(), '= ',  end='')
+    print(checking.get_balance(), '-', credit_card.get_balance(), end='')
+    print (')')
+
     print (repr('  Savings Account ').strip("'").ljust(26), end = '')
     print (savings.get_balance())
  	
