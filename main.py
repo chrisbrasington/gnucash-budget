@@ -85,7 +85,7 @@ class monthly_budget:
                     self.personal_accounts.append(account(name = current_account.name, budget = 0, amount = amount))
                
         # found bank (deposit)
-        if current_account.type == 'BANK':
+        if current_account.type == 'BANK' or current_account.type == 'INCOME':
             # add to savings
             if('Savings' in current_account.fullname):
                 self.savings += amount
@@ -182,8 +182,8 @@ class monthly_budget:
         print(self.get_percentage_bar(self.income, self.income_budget))
 
         # print income accounts
-        # self.print_accounts_summary(self.income_accounts)
-        # print()
+        self.print_accounts_summary(self.income_accounts)
+        print()
 
         # print savings summary
         print ('Savings  ', end='')
@@ -273,10 +273,22 @@ for current_month in range(today.month, 0, -1):
 
     for t in b.transactions:
         # only look at accounts being added into
-        splitnum = t.splits[0].value < 0
+        splitnum = int(t.splits[0].value < 0)
 
-        # unless account is income, look at where it came from
-        # not implemented
+        # if account is income, look at where it came from
+        if t.splits[splitnum].account.type == 'BANK':
+
+            # "from" account
+            secondary = (splitnum+1)%2
+
+            # use "from" account when referencing income
+            if('Income' in t.splits[secondary].account.fullname and 
+                t.post_date.month == current_month):
+
+                b.add_to_account(t.splits[secondary].account, t.splits[splitnum].value)
+
+                # skip over typical add
+                continue
 
         # add transaction if matching looping month
         if t.post_date.month == current_month:
