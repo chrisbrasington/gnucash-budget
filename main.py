@@ -233,7 +233,6 @@ if len(sys.argv[1:]) > 0:
     # different settings file
     elif 'yaml' in str(sys.argv[1:][0]):
         settings_file = sys.argv[1:][0]
-        print_full_year = True
 
 with open(settings_file) as ymlfile:
 	budget_file = yaml.load(ymlfile)
