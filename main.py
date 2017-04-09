@@ -204,16 +204,22 @@ def printAccountBalances(book):
     print (checking.get_balance(), end='')
 
     # net balance
-    print ('  (', end='')
-    print(checking.get_balance()-credit_card.get_balance(), '= ',  end='')
-    print(checking.get_balance(), '-', credit_card.get_balance(), end='')
-    print (')')
+    if(credit_card.get_balance() != 0):
+        print ('  (', end='')
+        print(checking.get_balance()-credit_card.get_balance(), '= ',  end='')
+        print(checking.get_balance(), '-', credit_card.get_balance(), end='')
+        print (')')
+    else:
+        print()
 
     print (repr('  Savings Account ').strip("'").ljust(26), end = '')
     print (savings.get_balance())
  	
     print (repr('  Credit Card ').strip("'").ljust(26), end = '')
-    print (credit_card.get_balance())
+    if(credit_card.get_balance() == 0):
+        print("0")
+    else:
+        print (credit_card.get_balance())
 
 # today
 today = datetime.date.today()
