@@ -253,12 +253,11 @@ except:
 	print ('Unable to open database.')
 	exit()
 
-year = []
+# start month is current month unless using full year starting at January
+start_month = 1 if print_full_year else today.month
 
-
-
-# for current month, descending in reverse for the year
-for current_month in range(today.month, 0, -1):
+# for current month, or January ascending to current month
+for current_month in range(start_month, today.month+1, 1):
     
     # create monthly budget from settings file
     b = monthly_budget(name = calendar.month_name[current_month], budget_file = budget_file)
