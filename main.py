@@ -36,6 +36,7 @@ class monthly_budget:
         self.savings = 0
         self.personal = 0
         self.income = 0
+        self.hourly_rate = 0
 
         # keep all monthly transactions disassociated from accounts
         self.transactions = []
@@ -56,7 +57,11 @@ class monthly_budget:
         self.personal_budget = budget_file['personal']['budget']
 
         # add income budget
-        self.income_budget = budget_file['income']['budget']
+        # assume 2 paychecks in a month (sometimes it's 3! might want to get smarter here..)
+        self.income_budget = budget_file['income']['paycheck']*2
+
+        # hourly rate is gross income / hours worked of paycheck (2 weeks)
+        self.hourly_rate = budget_file['income']['gross']/80
 
     # add transaction to associated account
     def add_to_account(self, current_account, amount):
@@ -149,8 +154,15 @@ class monthly_budget:
             print(repr(t.splits[splitnum].account.name).strip("'").ljust(20), end=' ')
 
             # transaction description
-            print(t.description)
-    
+            print(t.description.ljust(24), end=' ')
+
+            hours_worked = math.floor(float(t.splits[splitnum].value)/self.hourly_rate)
+            minutes_worked = math.floor(math.fabs(hours_worked-(float(t.splits[splitnum].value)/self.hourly_rate))*60)
+
+
+            print(str(hours_worked) + ":" + str(minutes_worked))
+
+
     # print full month's budget summary
     def print_summary(self):
         
