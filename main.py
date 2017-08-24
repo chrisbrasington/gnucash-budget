@@ -92,7 +92,7 @@ class monthly_budget:
         # found bank (deposit)
         if current_account.type == 'BANK' or current_account.type == 'INCOME':
             # add to savings
-            if('Savings' in current_account.fullname):
+            if 'Savings' in current_account.fullname:
                 self.savings += amount
             else:
                 # found income
@@ -107,8 +107,9 @@ class monthly_budget:
                 if not found:
                     self.income_accounts.append(account(name = current_account.name, budget = 0, amount = amount))
 
-        # elif current_account.type == 'CREDIT':
-        #     print ('credit')
+        #if current_account.type == 'CREDIT':
+        #    print(current_account)
+        #    print(amount)
     
     # get percentage bar
     def get_percentage_bar(self, amount, max):
@@ -308,11 +309,15 @@ for current_month in range(start_month, today.month+1, 1):
                 else:
                     b.add_to_account(t.splits[secondary].account, t.splits[splitnum].value)
 
-                # skip over typical add
-                continue
+        # add CC reward money as income, regardless of where it goes
+        elif t.splits[splitnum].account.type == 'CREDIT':
+            if 'Rewards' in t.splits[splitnum].account.fullname:
+                b.add_to_account(t.splits[splitnum].account, t.splits[splitnum].value)
+            if 'Rewards' in t.splits[(splitnum+1)%2].account.fullname:
+                b.add_to_account(t.splits[(splitnum+1)%2].account, abs(t.splits[(splitnum+1)%2].value))
 
         # add transaction if matching looping month
-        if t.post_date.month == current_month:
+        elif t.post_date.month == current_month:
             b.add_to_account(t.splits[splitnum].account, t.splits[splitnum].value)
 
     # print transactions descending
