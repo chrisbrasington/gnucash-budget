@@ -201,7 +201,7 @@ class monthly_budget:
         print ('Savings  ', end='')
         print('\t', repr(float(self.savings)).rjust(8), '/', repr(self.savings_budget).rjust(4), end=' ')
         print(self.get_percentage_bar(self.savings, self.savings_budget))
-
+        
 # print current book account balances
 def printAccountBalances(book):
  	
@@ -302,7 +302,11 @@ for current_month in range(start_month, today.month+1, 1):
             if('Income' in t.splits[secondary].account.fullname and 
                 t.post_date.month == current_month):
 
-                b.add_to_account(t.splits[secondary].account, t.splits[splitnum].value)
+                # unless income goes directly into "Savings", use savings account
+                if('Savings' in t.splits[splitnum].account.fullname):
+                    b.add_to_account(t.splits[splitnum].account, t.splits[splitnum].value)
+                else:
+                    b.add_to_account(t.splits[secondary].account, t.splits[splitnum].value)
 
                 # skip over typical add
                 continue
