@@ -299,15 +299,11 @@ for current_month in range(start_month, today.month+1, 1):
             # "from" account
             secondary = (splitnum+1)%2
 
-            # use "from" account when referencing income
-            if('Income' in t.splits[secondary].account.fullname and 
-                t.post_date.month == current_month):
-
-                # unless income goes directly into "Savings", use savings account
-                if('Savings' in t.splits[splitnum].account.fullname):
-                    b.add_to_account(t.splits[splitnum].account, t.splits[splitnum].value)
-                else:
-                    b.add_to_account(t.splits[secondary].account, t.splits[splitnum].value)
+            # use savings account (even if income goes directly into savings)
+            if('Savings' in t.splits[splitnum].account.fullname):
+                b.add_to_account(t.splits[splitnum].account, t.splits[splitnum].value)
+            else:
+                b.add_to_account(t.splits[secondary].account, t.splits[splitnum].value)
 
         # add CC reward money as income, regardless of where it goes
         elif t.splits[splitnum].account.type == 'CREDIT':
