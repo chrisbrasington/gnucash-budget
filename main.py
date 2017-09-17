@@ -22,8 +22,9 @@ class account:
 # build from settings file
 class monthly_budget:
 
-    def __init__(self,name, budget_file):
+    def __init__(self,name, month, budget_file):
         self.name = name
+        self.month = month
         self.essential_accounts = []
         self.personal_accounts = []
         self.saving_accounts = []
@@ -94,6 +95,7 @@ class monthly_budget:
             # add to savings
             if 'Savings' in current_account.fullname:
                 self.savings += amount
+                self.saving_accounts.append(account(name = current_account.name, budget = 0, amount = amount))
             else:
                 # found income
                 self.income += amount
@@ -202,9 +204,28 @@ class monthly_budget:
         print ('Savings  ', end='')
         print('\t', repr(float(self.savings)).rjust(8), '/', repr(self.savings_budget).rjust(4), end=' ')
         print(self.get_percentage_bar(self.savings, self.savings_budget))
+
+
+# print savings projection
+def printSavingsProjection(book, monthly_budget):
+    
+    savings = book.accounts(fullname="Assets:Current Assets:Savings Account")
+    monthly_addative_budget = 0
+
+    for m in range(monthly_budget.month+1, monthly_budget.month+6):
+        monthnum = m if m <13 else m%13+1 
+        year = datetime.datetime.now().year if m < 13 else datetime.datetime.now().year+1
+
+        print('    ', year, calendar.month_name[monthnum].ljust(9), "Projection:", end = ' ')
+        if(not (m == monthly_budget.month and monthly_budget.savings > monthly_budget.savings_budget)):
+            monthly_addative_budget += monthly_budget.savings_budget
+            print(savings.get_balance() + monthly_addative_budget, '= (', savings.get_balance(), '+', monthly_addative_budget, ')')
+        else:
+            print(savings.get_balance())
+
         
 # print current book account balances
-def printAccountBalances(book):
+def printAccountBalances(book, monthly_budget):
  	
     print()
     print ('Balances:', end=' ')
@@ -227,6 +248,8 @@ def printAccountBalances(book):
 
     print (repr('  Savings Account ').strip("'").ljust(26), end = '')
     print (savings.get_balance())
+
+    printSavingsProjection(book, monthly_budget)
  	
     print (repr('  Credit Card ').strip("'").ljust(26), end = '')
     if(credit_card.get_balance() == 0):
@@ -273,7 +296,7 @@ start_month = 1 if print_full_year else today.month
 for current_month in range(start_month, today.month+1, 1):
     
     # create monthly budget from settings file
-    b = monthly_budget(name = calendar.month_name[current_month], budget_file = budget_file)
+    b = monthly_budget(name = calendar.month_name[current_month], month = current_month, budget_file = budget_file)
 
     # print looping month
     date_str = str(calendar.month_name[current_month]) + ' ' + str(today.year)
@@ -323,8 +346,8 @@ for current_month in range(start_month, today.month+1, 1):
     if t.post_date.month == today.month:
 
         # print book account balances for current month only
-        printAccountBalances(book)
-
+        printAccountBalances(book, b)
+    
     # print monthly budget
     b.print_summary()
     print()
