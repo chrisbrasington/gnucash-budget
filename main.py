@@ -212,7 +212,7 @@ def printSavingsProjection(book, monthly_budget):
     savings = book.accounts(fullname="Assets:Current Assets:Savings Account")
     monthly_addative_budget = 0
 
-    for m in range(monthly_budget.month+1, monthly_budget.month+6):
+    for m in range(monthly_budget.month+1, monthly_budget.month+7):
         monthnum = m if m <13 else m%13+1 
         year = datetime.datetime.now().year if m < 13 else datetime.datetime.now().year+1
 
@@ -234,6 +234,12 @@ def printAccountBalances(book, monthly_budget):
     savings = book.accounts(fullname="Assets:Current Assets:Savings Account")
     credit_card = book.accounts(fullname="Liabilities:Credit Card")
     
+    print (repr('  Credit Card ').strip("'").ljust(26), end = '')
+    if(credit_card.get_balance() == 0):
+        print("0")
+    else:
+        print (credit_card.get_balance())
+    
     print (repr('  Checking Account ').strip("'").ljust(26), end='')
     print (checking.get_balance(), end='')
 
@@ -245,17 +251,11 @@ def printAccountBalances(book, monthly_budget):
         print (')')
     else:
         print()
-
+    
     print (repr('  Savings Account ').strip("'").ljust(26), end = '')
     print (savings.get_balance())
 
     printSavingsProjection(book, monthly_budget)
- 	
-    print (repr('  Credit Card ').strip("'").ljust(26), end = '')
-    if(credit_card.get_balance() == 0):
-        print("0")
-    else:
-        print (credit_card.get_balance())
 
 # today
 today = datetime.date.today()
@@ -266,15 +266,22 @@ today = datetime.date.today()
 # settings file
 settings_file = 'settings.yaml'
 
-# command line parameter
-print_full_year = False
+# start month is current month 
+start_month = today.month 
+
 if len(sys.argv[1:]) > 0:
     # print full year
     if str(sys.argv[1:][0]) == 'year':
+        start_month = 1
         print_full_year = True
     # different settings file
     elif 'yaml' in str(sys.argv[1:][0]):
         settings_file = sys.argv[1:][0]
+    else:
+        try:
+            start_month = (today.month - int(sys.argv[1:][0]) + 1)
+        except ValueError:
+            print("Failure to parse commandline argument")
 
 with open(settings_file) as ymlfile:
 	budget_file = yaml.load(ymlfile)
@@ -288,9 +295,6 @@ try:
 except:
 	print ('Unable to open database.')
 	exit()
-
-# start month is current month unless using full year starting at January
-start_month = 1 if print_full_year else today.month
 
 # for current month, or January ascending to current month
 for current_month in range(start_month, today.month+1, 1):
@@ -351,7 +355,3 @@ for current_month in range(start_month, today.month+1, 1):
     # print monthly budget
     b.print_summary()
     print()
-
-    # stop at current month or keep going
-    if not print_full_year:
-        break
