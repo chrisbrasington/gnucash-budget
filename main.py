@@ -381,17 +381,14 @@ for current_month in range(start_month, today.month+1, 1):
 
     # print transactions descending
     b.print_transactions_desc()    
-
-    # print monthly transactions descending
-    if t.post_date.month == today.month:
-
-        # print book account balances for current month only
-        printAccountBalances(book, b)
     
     # print monthly budget
     b.print_summary()
-    print()
 
+# print book account balances for current month only
+printAccountBalances(book, b)
+print()
 
+# print projection
 b = monthly_budget(name = calendar.month_name[start_month], month = start_month, budget_file = budget_file)
 printSavingsProjection(book, b)
