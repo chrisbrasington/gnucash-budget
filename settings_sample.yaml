@@ -19,3 +19,8 @@ personal:
     budget: 1000
 income:
     paycheck: 4000
+debt:
+    name: Loan
+    amount: 2000
+    budget: 100
+    help: 100

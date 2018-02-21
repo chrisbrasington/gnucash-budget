@@ -38,6 +38,9 @@ class monthly_budget:
         self.personal = 0
         self.income = 0
         self.hourly_rate = 0
+        self.debt_name = ''
+        self.debt_amount = 0
+        self.debt_budget = 0
 
         # keep all monthly transactions disassociated from accounts
         self.transactions = []
@@ -63,6 +66,13 @@ class monthly_budget:
 
         # hourly rate is gross income / hours worked of paycheck (2 weeks)
         self.hourly_rate = budget_file['income']['gross']/80
+
+        try:
+            self.debt_name = budget_file['debt']['name']
+            self.debt_amount = budget_file['debt']['amount']
+            self.debt_budget = budget_file['debt']['budget'] + budget_file['debt']['help']
+        except: 
+            pass
 
     # add transaction to associated account
     def add_to_account(self, current_account, amount):
@@ -211,18 +221,42 @@ def printSavingsProjection(book, monthly_budget):
     
     savings = book.accounts(fullname="Assets:Current Assets:Savings Account")
     monthly_addative_budget = 0
+    debt_bal = monthly_budget.debt_amount
+    debt_subtractive = 0
 
-    for m in range(monthly_budget.month+1, monthly_budget.month+7):
+    debt_free = False
+
+    print('Projection: ')
+
+    for m in range(monthly_budget.month+1, monthly_budget.month+13-monthly_budget.month):
         monthnum = m if m <13 else m%13+1 
         year = datetime.datetime.now().year if m < 13 else datetime.datetime.now().year+1
 
-        print('    ', year, calendar.month_name[monthnum].ljust(9), "Projection:", end = ' ')
+        print('    ', year, calendar.month_name[monthnum].ljust(10), "Saving:", end = ' ')
         if(not (m == monthly_budget.month and monthly_budget.savings > monthly_budget.savings_budget)):
             monthly_addative_budget += monthly_budget.savings_budget
-            print(savings.get_balance() + monthly_addative_budget, '= (', savings.get_balance(), '+', monthly_addative_budget, ')')
-        else:
-            print(savings.get_balance())
+            print(savings.get_balance() + monthly_addative_budget, ' (+', str(monthly_addative_budget).ljust(4), ')', sep='', end = ' ')
 
+            if debt_bal == 0:
+                print()
+                continue
+
+            debt_subtractive = debt_subtractive + monthly_budget.debt_budget
+            debt_bal = debt_bal - monthly_budget.debt_budget
+
+            if(debt_bal < 0): 
+                debt_subtractive = debt_subtractive - monthly_budget.debt_budget
+                debt_subtractive = debt_subtractive + debt_bal + monthly_budget.debt_budget
+                debt_bal = 0
+            
+            if not debt_free:
+                print(' |  ', monthly_budget.debt_name, ': ', str(debt_bal).ljust(4), ' (-', str(debt_subtractive).ljust(4), ')', sep='')
+            else:
+                print()
+
+            if debt_bal <= 0:
+                debt_free = True
+            
         
 # print current book account balances
 def printAccountBalances(book, monthly_budget):
@@ -255,7 +289,6 @@ def printAccountBalances(book, monthly_budget):
     print (repr('  Savings Account ').strip("'").ljust(26), end = '')
     print (savings.get_balance())
 
-    printSavingsProjection(book, monthly_budget)
 
 # today
 today = datetime.date.today()
@@ -355,3 +388,7 @@ for current_month in range(start_month, today.month+1, 1):
     # print monthly budget
     b.print_summary()
     print()
+
+
+b = monthly_budget(name = calendar.month_name[start_month], month = start_month, budget_file = budget_file)
+printSavingsProjection(book, b)
