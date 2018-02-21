@@ -69,7 +69,6 @@ class monthly_budget:
 
         try:
             self.debt_name = budget_file['debt']['name']
-            self.debt_amount = budget_file['debt']['amount']
             self.debt_budget = budget_file['debt']['budget'] + budget_file['debt']['help']
         except: 
             pass
@@ -221,7 +220,11 @@ def printSavingsProjection(book, monthly_budget):
     
     savings = book.accounts(fullname="Assets:Current Assets:Savings Account")
     monthly_addative_budget = 0
-    debt_bal = monthly_budget.debt_amount
+    debt_bal = 0 
+    
+    if monthly_budget.debt_budget != 0:
+        debt_bal = book.accounts(fullname='Liabilities:Loans:'+monthly_budget.debt_name).get_balance()
+
     debt_subtractive = 0
 
     debt_free = False
@@ -250,7 +253,7 @@ def printSavingsProjection(book, monthly_budget):
                 debt_bal = 0
             
             if not debt_free:
-                print(' |  ', monthly_budget.debt_name, ': ', str(debt_bal).ljust(4), ' (-', str(debt_subtractive).ljust(4), ')', sep='')
+                print(' |  ', monthly_budget.debt_name, ': ', str(debt_bal).ljust(7), ' (-', str(debt_subtractive).ljust(4), ')', sep='')
             else:
                 print()
 
