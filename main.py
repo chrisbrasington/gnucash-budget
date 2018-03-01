@@ -266,10 +266,18 @@ def printAccountBalances(book, monthly_budget):
  	
     print()
     print ('Balances:', end=' ')
-    print ("({:%b %d %Y})".format(datetime.date.today()))
+    print ("({:%b %d %Y})".format(datetime.date.today()), end=' ')
+    print('  ', end='')
+
+    # recurse requires piecash version 14.1+
+    net = book.accounts(fullname="Assets").get_balance(True, None) 
+    print(net, end =' (NET)\n')
+
     checking = book.accounts(fullname="Assets:Current Assets:Checking Account")
     savings = book.accounts(fullname="Assets:Current Assets:Savings Account")
     credit_card = book.accounts(fullname="Liabilities:Credit Card")
+    retirement = book.accounts(fullname="Assets:Retirement:Main")
+    health = book.accounts(fullname="Assets:HSA:Health")
     
     print (repr('  Credit Card ').strip("'").ljust(26), end = '')
     if(credit_card.get_balance() == 0):
@@ -291,6 +299,12 @@ def printAccountBalances(book, monthly_budget):
     
     print (repr('  Savings Account ').strip("'").ljust(26), end = '')
     print (savings.get_balance())
+
+    print (repr('  Retirement ').strip("'").ljust(26), end = '')
+    print (retirement.get_balance())
+
+    print (repr('  Health Savings ').strip("'").ljust(26), end = '')
+    print (health.get_balance())
 
 
 # today
