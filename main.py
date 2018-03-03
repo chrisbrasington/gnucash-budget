@@ -160,7 +160,7 @@ class monthly_budget:
             print (repr(t.post_date.strftime("%m/%d/%Y")).rjust(10).strip("'"), ' ', end='')
 
             # transaction account type
-            print (repr(t.splits[splitnum].account.type).strip("'").ljust(7), ' ', end='')
+            print (repr(t.splits[splitnum].account.type).strip("'").ljust(9), ' ', end='')
 
             # transaction account name
             print(repr(t.splits[splitnum].account.name).strip("'").ljust(20), end=' ')
@@ -172,8 +172,12 @@ class monthly_budget:
             minutes_worked = math.floor(math.fabs(hours_worked-(float(t.splits[splitnum].value)/self.hourly_rate))*60)
 
 
-            print(str(hours_worked) + ":" + str(minutes_worked))
+            print((str(hours_worked) + ":" + str(minutes_worked)).ljust(8), end ='')
 
+            if(t.post_date > datetime.date.today()):
+                print('PROJECTION')
+            else:
+                print()
 
     # print full month's budget summary
     def print_summary(self):
@@ -290,7 +294,7 @@ def printAccountBalances(book, monthly_budget):
 
     # net balance
     if(credit_card.get_balance() != 0):
-        print ('  (', end='')
+        print (' (', end='')
         print(checking.get_balance()-credit_card.get_balance(), '= ',  end='')
         print(checking.get_balance(), '-', credit_card.get_balance(), end='')
         print (')')
