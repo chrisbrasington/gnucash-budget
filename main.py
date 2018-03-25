@@ -87,17 +87,21 @@ class monthly_budget:
                     is_essential = True
             # not essential, is personal account
             if not is_essential:
-                self.personal += amount
-                # search for personal account
-                found = False
-                for a in self.personal_accounts:
-                    # add to found personal account
-                    if a.name == current_account.name:
-                        found = True
-                        a.amount += amount
-                # add to new personal account
-                if not found:
-                    self.personal_accounts.append(account(name = current_account.name, budget = 0, amount = amount))
+                
+                # do not include interest account in non-essential accounts
+                #    as they are likely accounted for in liabilities (loan)
+                if "Interest" not in current_account.name:
+                    self.personal += amount
+                    # search for personal account
+                    found = False
+                    for a in self.personal_accounts:
+                        # add to found personal account
+                        if a.name == current_account.name:
+                            found = True
+                            a.amount += amount
+                    # add to new personal account
+                    if not found:
+                        self.personal_accounts.append(account(name = current_account.name, budget = 0, amount = amount))
                
         # found bank (deposit)
         if current_account.type == 'BANK' or current_account.type == 'INCOME':
