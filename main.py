@@ -148,7 +148,8 @@ class monthly_budget:
     def print_accounts_summary(self, accounts):
         print()
         for a in accounts:
-            print(a)
+            if(a.amount > 0):
+                print(a)
 
     # print transactions from most recent descending
     def print_transactions_desc(self):
