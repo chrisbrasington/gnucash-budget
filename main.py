@@ -241,10 +241,9 @@ def printAccountBalances(book, monthly_budget):
     retirement = book.accounts(fullname="Assets:Retirement:Main")
     health = book.accounts(fullname="Assets:HSA:Health")
 
-    print(net
-        -credit_card.get_balance(True, None)
-        -retirement.get_balance(True, None)
-        -health.get_balance(True, None), end=' (AVALIABLE)\n')
+    print(checking.get_balance(True,None)
+        +savings.get_balance(True,None)
+        -credit_card.get_balance(True, None), end=' (AVALIABLE)\n')
     
     print (repr('  Credit Card ').strip("'").ljust(26), end = '')
     if(credit_card.get_balance() == 0):
